@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Feedback Portal</title>
+</head>
+<body>
+    <div class="container">
+
+        <h1>Student Feedback portal</h1>
+        <h2>Submit feedback for your courses</h2>
+
+         <img src="logo.png" alt="logo" title="Student Feedback">
+         <form action="feedback-received.html" method="post">
+            <label>Student Name:</label>
+            <input type="text" name="student_name" required>
+            <label>Email:</label>
+            <input type="text" name="email" required> 
+            <br>
+            <label>Course:</label>
+            <select name="course">
+                <option>Web Development</option>
+                <option>Data Structures</option>
+                <option>Artificial Intelligence</option>
+                <option>Computer Networks</option>
+            </select>
+            <br>
+            <label>Rating:</label>
+            <div class="rating">
+                <input type="radio" name="rating" value="1">1
+                <input type="radio" name="rating" value="2">2
+                <input type="radio" name="rating" value="3">3
+                <input type="radio" name="rating" value="4">4
+                <input type="radio" name="rating" value="5">5
+            </div>
+<br>
+            <label>comments:</label>
+            <textarea name="commants" rows="4"></textarea>
+            <button type="submit">Submit Feedback</button>
+         </form>
+
+         <footer>
+            Email us at <strong>i221510@nu.edu.pk</strong><br>
+            © 2026 University Feedback System
+         </footer>
+
+    </div>
+    
+</body>
+</html>
