@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>task2</title>
+    <style>
+        * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: sans-serif;
+    padding: 20px;
+    background-color: #fff;
+}
+
+.container {
+    display: grid;
+    height: 90vh; 
+    grid-template-columns: 200px 1fr; 
+    grid-template-rows: 60px 1fr 60px; 
+    gap: 10px; 
+    grid-template-areas: 
+        "header header"
+        "sidebar main"
+        "footer footer";
+}
+
+
+.header, .sidebar, .main-content, .footer {
+    padding: 15px;
+    font-size: 14px;
+    color: #333;
+}
+
+
+.header {
+    grid-area: header;
+    background-color: #b3d9ff; 
+}
+
+.sidebar {
+    grid-area: sidebar;
+    background-color: #fce4e4; 
+}
+
+.main-content {
+    grid-area: main;
+    background-color: #e2f7e1; 
+}
+
+.footer {
+    grid-area: footer;
+    background-color: #abb5be; 
+}
+
+    </style>
+</head>
+<body>
+  <div class="container">
+        <header class="header">Header</header>
+        <aside class="sidebar">Sidebar</aside>
+        <main class="main-content">Main Content</main>
+        <footer class="footer">Footer</footer>
+    </div>
+</body>
+</html>

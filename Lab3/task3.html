@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flexbox Layout Task</title>
+   <style>
+    * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background-color: #f0f2f5;
+}
+
+
+.navbar {
+    display: flex;
+    justify-content: space-between; 
+    align-items: center;            
+    padding: 1rem 5%;
+    background-color: #2d3436;
+    color: white;
+}
+
+.nav-links {
+    display: flex;
+    list-style: none;
+    gap: 20px;                     
+}
+
+.nav-links a {
+    color: white;
+    text-decoration: none;
+    transition: color 0.3s;
+}
+
+.nav-links a:hover {
+    color: #00cec9;               
+}
+
+.container {
+    display: flex;
+    flex-wrap: wrap;                
+    justify-content: center;        
+    gap: 20px;                      
+    padding: 40px 5%;
+}
+
+
+.card {
+    background: white;
+    flex: 1 1 250px;                
+    max-width: 350px;
+    padding: 25px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);    
+}
+
+.card h3 {
+    margin-bottom: 10px;
+    color: #2d3436;
+}
+
+.card p {
+    color: #636e72;
+    line-height: 1.5;
+}
+   </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="logo">FlexDesign</div>
+        <ul class="nav-links">
+            <li><a href="#">Home</a></li>
+            <li><a href="#">Services</a></li>
+            <li><a href="#">Portfolio</a></li>
+            <li><a href="#">Contact</a></li>
+        </ul>
+    </nav>
+
+    <section class="container">
+        <div class="card">
+            <h3>Web Design</h3>
+            <p>Creating beautiful, responsive interfaces using modern CSS techniques.</p>
+        </div>
+        <div class="card">
+            <h3>Development</h3>
+            <p>Building robust applications with a focus on performance and scale.</p>
+        </div>
+        <div class="card">
+            <h3>SEO Setup</h3>
+            <p>Optimizing your digital presence to reach the right audience effectively.</p>
+        </div>
+        <div class="card">
+            <h3>Marketing</h3>
+            <p>Strategy-driven campaigns to grow your brand's global footprint.</p>
+        </div>
+    </section>
+
+</body>
+</html>

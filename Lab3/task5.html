@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Float Layout Task</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: sans-serif;
+        }
+
+        body {
+            background-color: #f0f0f0;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1000px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+        }
+
+        .left-section {
+            float: left;
+            width: 60%;
+            background-color: #e3f2fd;
+            padding: 20px;
+        }
+
+        .right-section {
+            float: right;
+            width: 40%;
+            background-color: #fff3e0;
+            padding: 20px;
+        }
+
+        .content-item {
+            background-color: white;
+            margin-bottom: 15px;
+            padding: 10px;
+            border: 1px solid #ccc;
+        }
+
+        .content-item img {
+            width: 100%;
+            height: 120px;
+            object-fit: cover;
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        .sidebar-item {
+            background-color: white;
+            padding: 15px;
+            border: 1px solid #ccc;
+        }
+
+        .sidebar-item a {
+            display: inline-block;
+            margin-top: 10px;
+            color: #d84315;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .clearfix::after {
+            content: "";
+            display: table;
+            clear: both;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container clearfix">
+        
+        <div class="left-section">
+            <h2>Latest News</h2>
+            <div class="content-item">
+                <img src="logo.png" alt="News 1">
+                <p>Modern web development involves mastering various layout techniques including Floats and Flexbox.</p>
+            </div>
+            <div class="content-item">
+                <img src="ai.png" alt="News 2">
+                <p>CSS Floats were originally intended for wrapping text around images but were used for layouts for years.</p>
+            </div>
+            <div class="content-item">
+                <img src="wreb.png" alt="News 3">
+                <p>Understanding the clear property is essential when working with floated elements to fix container collapse.</p>
+            </div>
+        </div>
+
+        <div class="right-section">
+            <h2>University Info</h2>
+            <div class="sidebar-item">
+                <p>Find more details about our computer science programs and campus life on our official portal.</p>
+                <a href="https://www.nu.edu.pk/" target="_blank">Visit University Website</a>
+            </div>
+        </div>
+
+    </div>
+
+</body>
+</html>
