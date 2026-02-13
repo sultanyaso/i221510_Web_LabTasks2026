@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Activity Dashboard</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        header {
+            background-color: #0a1a4f;
+            color: white;
+            padding: 10px;
+            text-align: center;
+        }
+
+        header h1 {
+            margin: 0;
+            text-transform: capitalize;
+        }
+
+        .navBar {
+            display: flex;
+            background-color: #1e3a8a;
+            list-style: none;
+            margin: 0;
+            padding: 15px;
+            justify-content: space-around;
+        }
+
+        .navBar li a {
+            color: white;
+            text-decoration: none;
+        }
+
+        .grid {
+            display: grid;
+            padding: 20px;
+            gap: 20px;
+            color: white;
+        }
+
+        .grid div {
+            background-color: #1d4ed8;
+            padding: 40px 10px;
+            text-align: center;
+            border-radius: 8px;
+        }
+
+        .gallery {
+            display: grid;
+            padding: 20px;
+            gap: 15px;
+        }
+
+        .gallery img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 5px;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .gallery img:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+        }
+
+        @media (min-width: 1024px) {
+            .navBar { flex-direction: row; font-size: 17px; }
+            .grid { grid-template-columns: repeat(3, 1fr); font-size: 17px; }
+            .gallery { grid-template-columns: repeat(5, 1fr); }
+        }
+
+        @media (min-width: 768px) and (max-width: 1023px) {
+            .navBar { flex-direction: row; font-size: 15px; }
+            .grid { grid-template-columns: repeat(2, 1fr); font-size: 15px; }
+            .gallery { grid-template-columns: repeat(3, 1fr); }
+        }
+
+        @media (max-width: 767px) {
+            .navBar { flex-direction: column; align-items: center; gap: 10px; font-size: 13px; }
+            .grid { grid-template-columns: 1fr; font-size: 13px; }
+            .gallery { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div>
+        <header>
+            <h1>Student Activity Dashboard</h1>
+        </header>
+
+        <nav>
+            <ul class="navBar">
+                <li><a href="task1.html">Home</a></li>
+                <li><a href="task2.html">Activities</a></li>
+                <li><a href="task3.html">Events</a></li>
+                <li><a href="task4.html">Profile</a></li>
+            </ul>
+        </nav>
+
+        <main>
+            <div class="grid">
+                <div>Workshop</div>
+                <div>Hackathon</div>
+                <div>Seminar</div>
+                <div>Sports</div>
+                <div>Society Meet</div>
+            </div>
+
+            <div class="gallery">
+                <img src="images.jpeg" alt="pic 1">
+                <img src="images (1).jpeg" alt="pic  2">
+                <img src="download.jpeg" alt="pic  3">
+                <img src="download (1).jpeg" alt="pic  4">
+                <img src="images (2).jpeg" alt="pic  5">
+            </div>
+        </main>
+    </div>
+</body>
+</html>
