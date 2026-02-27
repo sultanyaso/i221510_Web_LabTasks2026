@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real-Time Form Validation</title>
+    <style>
+        body { font-family: sans-serif; display: flex; justify-content: center; padding: 20px; }
+        form { width: 100%; max-width: 400px; padding: 20px; border: 1px solid #ddd; border-radius: 8px; }
+        
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; }
+        
+        input {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+            border: 2px solid #ccc;
+            border-radius: 4px;
+            outline: none;
+        }
+
+        
+        input.valid { border-color: #2ecc71; }
+        input.invalid { border-color: #e74c3c; }
+        
+        .error-msg {
+            color: #e74c3c;
+            font-size: 0.85rem;
+            margin-top: 5px;
+            height: 1rem; 
+        }
+
+        input:disabled { background-color: #eee; cursor: not-allowed; }
+        input[type="submit"] {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px;
+            cursor: pointer;
+            width: 100%;
+        }
+        input[type="submit"]:disabled { background-color: #bdc3c7; }
+    </style>
+</head>
+<body>
+
+    <form id="registrationForm">
+        <div class="form-group">
+            <label for="name">Name:</label>
+            <input type="text" id="name" placeholder="Min 3 characters">
+            <div class="error-msg" id="nameError"></div>
+        </div>
+
+        <div class="form-group">
+            <label for="email">Email:</label>
+            <input type="email" id="email" placeholder="example@domain.com">
+            <div class="error-msg" id="emailError"></div>
+        </div>
+
+        <div class="form-group">
+            <label for="password">Password:</label>
+            <input type="password" id="password" placeholder="6+ chars and 1 number">
+            <div class="error-msg" id="passwordError"></div>
+        </div>
+
+        <div class="form-group">
+            <label for="cpassword">Confirm Password:</label>
+            <input type="password" id="cpassword">
+            <div class="error-msg" id="cpasswordError"></div>
+        </div>
+
+        <div class="form-group">
+            <label for="age">Age:</label>
+            <input type="number" id="age" placeholder="18 - 60">
+            <div class="error-msg" id="ageError"></div>
+        </div>
+
+        <input type="submit" id="submitBtn" value="Submit" disabled>
+    </form>
+
+    <script>
+        const form = document.getElementById('registrationForm');
+        const submitBtn = document.getElementById('submitBtn');
+        
+        
+        const validators = {
+            name: (val) => val.length >= 3 || "Name must be at least 3 characters.",
+            email: (val) => (/^[^\s@]+@[^\s@]+\.[^\s@]+$/).test(val) || "Enter a valid email address.",
+            password: (val) => (val.length >= 6 && /\d/.test(val)) || "Min 6 chars and at least 1 number.",
+            cpassword: (val) => val === document.getElementById('password').value || "Passwords do not match.",
+            age: (val) => (val >= 18 && val <= 60) || "Age must be between 18 and 60."
+        };
+
+        const inputs = form.querySelectorAll('input:not([type="submit"])');
+
+        function validateInput(input) {
+            const id = input.id;
+            const value = input.value;
+            const errorElement = document.getElementById(`${id}Error`);
+            const result = validators[id](value);
+
+            if (result === true) {
+                input.classList.add('valid');
+                input.classList.remove('invalid');
+                errorElement.textContent = "";
+                return true;
+            } else {
+                input.classList.add('invalid');
+                input.classList.remove('valid');
+                errorElement.textContent = result;
+                return false;
+            }
+        }
+
+        function checkFormValidity() {
+            let allValid = true;
+            inputs.forEach(input => {
+                if (!validateInput(input)) allValid = false;
+            });
+            submitBtn.disabled = !allValid;
+        }
+
+        
+        inputs.forEach(input => {
+            input.addEventListener('input', () => {
+                validateInput(input);
+                
+                if(input.id === 'password') validateInput(document.getElementById('cpassword'));
+                checkFormValidity();
+            });
+        });
+    </script>
+</body>
+</html>

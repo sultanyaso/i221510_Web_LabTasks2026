@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Todo List</title>
+
+<style>
+    body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+    }
+
+    .container {
+        background: white;
+        width: 350px;
+        padding: 25px;
+        border-radius: 15px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        text-align: center;
+    }
+
+    h2 {
+        margin-bottom: 20px;
+    }
+
+    input {
+        width: 70%;
+        padding: 10px;
+        border-radius: 8px;
+        border: 1px solid #ccc;
+        outline: none;
+    }
+
+    button {
+        padding: 10px 15px;
+        border: none;
+        background: #667eea;
+        color: white;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: bold;
+        transition: 0.3s;
+    }
+
+    button:hover {
+        background: #5a67d8;
+    }
+
+    ul {
+        list-style: none;
+        padding: 0;
+        margin-top: 20px;
+    }
+
+    li {
+        background: #f4f6f9;
+        padding: 10px;
+        margin-top: 10px;
+        border-radius: 8px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        transition: 0.3s;
+    }
+
+    li:hover {
+        background: #e2e8f0;
+        transform: scale(1.02);
+    }
+
+    .delete {
+        background: red;
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 25px;
+        height: 25px;
+        cursor: pointer;
+        font-size: 14px;
+        line-height: 25px;
+        text-align: center;
+        transition: 0.3s;
+    }
+
+    .delete:hover {
+        background: darkred;
+    }
+</style>
+</head>
+
+<body>
+
+<div class="container">
+    <h2>Todo List</h2>
+
+    
+    <input type="text" id="taskInput" placeholder="Enter new task">
+
+    
+    <button onclick="addTask()">Add Task</button>
+
+    
+    <ul id="taskList"></ul>
+</div>
+
+<script>
+function addTask() {
+    let input = document.getElementById("taskInput");
+    let taskText = input.value.trim();
+
+    
+    if (taskText === "") {
+        alert("Task cannot be empty!");
+        return;
+    }
+
+    
+    let li = document.createElement("li");
+    li.textContent = taskText;
+
+    
+    let deleteBtn = document.createElement("button");
+    deleteBtn.textContent = "×";
+    deleteBtn.className = "delete";
+
+    
+    deleteBtn.onclick = function() {
+        li.remove();
+    };
+
+    li.appendChild(deleteBtn);
+    document.getElementById("taskList").appendChild(li);
+
+    
+    input.value = "";
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Student Profile Card</title>
+
+<style>
+    body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        background: #f4f6f9;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+    }
+
+    .card {
+        background: white;
+        width: 320px;
+        border-radius: 15px;
+        box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+        text-align: center;
+        padding: 20px;
+        transition: transform 0.3s ease;
+    }
+
+    .card:hover {
+        transform: scale(1.05);
+    }
+
+    .profile-img {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        object-fit: cover;
+        margin-bottom: 15px;
+    }
+
+    h2 {
+        margin: 10px 0 5px;
+    }
+
+    p {
+        margin: 5px 0;
+        color: #555;
+    }
+
+    .extra-info {
+        margin-top: 15px;
+        display: none;
+        text-align: left;
+    }
+
+    button {
+        margin-top: 15px;
+        padding: 10px 15px;
+        border: none;
+        background: #007bff;
+        color: white;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 14px;
+    }
+
+    button:hover {
+        background: #0056b3;
+    }
+
+    
+    @media (max-width: 500px) {
+        .card {
+            width: 90%;
+        }
+    }
+
+</style>
+</head>
+<body>
+
+<div class="card">
+    <img src="me2.jpeg" alt="Student Image" class="profile-img">
+
+    <h2>Yasir Sultan</h2>
+    <p><strong>Registration No:</strong> 12345</p>
+    <p><strong>Department:</strong> Software Engineering</p>
+
+    <div class="extra-info" id="extraInfo">
+        <p><strong>Hobbies:</strong> Hiking, Traveling, Cricket</p>
+        <p><strong>Skills:</strong> HTML, CSS, JavaScript, React</p>
+        <p><strong>Email:</strong> i221510@nu.edu.pk</p>
+    </div>
+
+    <button onclick="toggleInfo()" id="toggleBtn">Show More</button>
+</div>
+
+<script>
+    function toggleInfo() {
+        const extraInfo = document.getElementById("extraInfo");
+        const btn = document.getElementById("toggleBtn");
+
+        if (extraInfo.style.display === "none" || extraInfo.style.display === "") {
+            extraInfo.style.display = "block";
+            btn.textContent = "Show Less";
+        } else {
+            extraInfo.style.display = "none";
+            btn.textContent = "Show More";
+        }
+    }
+</script>
+
+</body>
+</html>

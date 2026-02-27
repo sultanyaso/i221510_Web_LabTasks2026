@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Counter Application</title>
+    <style>
+         body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        background: whitesmoke;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+    }
+         .container {
+        background: white;
+        width: 350px;
+        padding: 25px;
+        border-radius: 15px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        text-align: center;
+    }
+    button{
+        
+        padding: 10px 15px;
+        border: none;
+        background: blue;
+        color: white;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: bold;
+        transition: 0.3s;
+    }
+    button:hover {
+        background-color: darkblue;
+    }
+    
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Counter Application</h2>
+        <div id="count">0</div>
+        <button onclick="increase()" id="increase">Increment</button>
+        <button onclick="decrease()" id="decrease">Decrement</button>
+        <button onclick="reset()" id="reset">Reset</button>
+    </div>
+</body>
+<script>
+    let count = 0;
+
+    function increase() {
+        count++;
+        document.getElementById("count").innerText = count;
+    }
+    function decrease() {
+        count--;
+         
+        document.getElementById("count").innerText=count;
+    }
+    function reset() {
+        count=0;
+        document.getElementById("count").innerText=count;
+    }
+</script>
+</html>
