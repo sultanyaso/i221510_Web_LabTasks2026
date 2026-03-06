@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dynamic Image Gallery</title>
+
+<style>
+
+body{
+font-family: Arial;
+text-align:center;
+background:#f4f4f4;
+}
+
+h1{
+margin-top:20px;
+}
+
+.container{
+margin:20px;
+}
+
+.container input, .container select{
+padding:8px;
+margin:5px;
+}
+
+button{
+padding:8px 12px;
+cursor:pointer;
+border:none;
+background:#333;
+color:white;
+border-radius:4px;
+}
+
+button:hover{
+background:#555;
+}
+
+.gallery{
+display:flex;
+gap:20px;
+justify-content:center;
+flex-wrap:wrap;
+margin-top:20px;
+}
+
+.card{
+width:180px;
+background:white;
+padding:10px;
+border-radius:8px;
+box-shadow:0 2px 5px rgba(0,0,0,0.2);
+}
+
+.card img{
+width:100%;
+border-radius:6px;
+cursor:pointer;
+}
+
+.filters{
+margin-top:10px;
+}
+
+.filters button{
+background:#777;
+margin:3px;
+}
+
+.filters button:hover{
+background:#444;
+}
+
+/* Modal */
+
+.modal{
+display:none;
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:rgba(0,0,0,0.6);
+}
+
+.modal-content{
+background:white;
+padding:20px;
+margin:10% auto;
+width:300px;
+border-radius:10px;
+position:relative;
+}
+
+.modal img{
+width:100%;
+border-radius:6px;
+}
+
+#close{
+position:absolute;
+right:10px;
+top:5px;
+cursor:pointer;
+font-size:24px;
+}
+
+</style>
+</head>
+
+<body>
+
+<h1>Dynamic Image Gallery</h1>
+
+<div class="container">
+
+<input type="url" id="url" placeholder="Image URL">
+<input type="text" id="title" placeholder="Title">
+<input type="text" id="description" placeholder="Description">
+
+<select id="category">
+<option value="nature">Nature</option>
+<option value="architecture">Architecture</option>
+<option value="animals">Animals</option>
+</select>
+
+<button id="addBtn">Add Image</button>
+
+</div>
+
+<div class="filters">
+<button data-filter="all">All</button>
+<button data-filter="nature">Nature</button>
+<button data-filter="architecture">Architecture</button>
+<button data-filter="animals">Animals</button>
+</div>
+
+<div id="gallery" class="gallery"></div>
+
+<!-- Modal -->
+<div id="modal" class="modal">
+<div class="modal-content">
+
+<span id="close">&times;</span>
+
+<img id="modal-img">
+<h3 id="modal-title"></h3>
+<p id="modal-desc"></p>
+
+</div>
+</div>
+
+
+<script>
+
+const gallery = document.getElementById("gallery");
+const addBtn = document.getElementById("addBtn");
+
+const modal = document.getElementById("modal");
+const modalImg = document.getElementById("modal-img");
+const modalTitle = document.getElementById("modal-title");
+const modalDesc = document.getElementById("modal-desc");
+
+let images = [
+
+{
+url:"https://images.unsplash.com/photo-1501785888041-af3ef285b470",
+title:"Mountain",
+desc:"Beautiful mountain",
+category:"nature"
+},
+
+{
+url:"https://images.unsplash.com/photo-1500530855697-b586d89ba3ee",
+title:"Bridge",
+desc:"Golden Gate Bridge",
+category:"architecture"
+},
+
+{
+url:"https://images.unsplash.com/photo-1546182990-dffeafbe841d",
+title:"Lion",
+desc:"King of jungle",
+category:"animals"
+}
+
+];
+
+function displayImages(filter="all"){
+
+gallery.innerHTML="";
+
+images.forEach((img,index)=>{
+
+if(filter==="all" || img.category===filter){
+
+const card=document.createElement("div");
+card.classList.add("card");
+
+card.innerHTML=`
+<img src="${img.url}" data-index="${index}">
+<h4>${img.title}</h4>
+`;
+
+gallery.appendChild(card);
+
+}
+
+});
+
+}
+
+displayImages();
+
+
+// Add Image
+
+addBtn.addEventListener("click",()=>{
+
+const url=document.getElementById("url").value;
+const title=document.getElementById("title").value;
+const desc=document.getElementById("description").value;
+const category=document.getElementById("category").value;
+
+if(url && title){
+
+images.push({
+url,
+title,
+desc,
+category
+});
+
+displayImages();
+
+document.getElementById("url").value="";
+document.getElementById("title").value="";
+document.getElementById("description").value="";
+
+}
+
+else{
+alert("Please enter image URL and title");
+}
+
+});
+
+
+// Filter buttons
+
+document.querySelectorAll(".filters button").forEach(btn=>{
+
+btn.addEventListener("click",()=>{
+
+const filter=btn.dataset.filter;
+displayImages(filter);
+
+});
+
+});
+
+
+// Modal open
+
+gallery.addEventListener("click",(e)=>{
+
+if(e.target.tagName==="IMG"){
+
+const index=e.target.dataset.index;
+const img=images[index];
+
+modal.style.display="block";
+modalImg.src=img.url;
+modalTitle.textContent=img.title;
+modalDesc.textContent=img.desc;
+
+}
+
+});
+
+
+// Close modal
+
+document.getElementById("close").onclick=()=>{
+modal.style.display="none";
+};
+
+
+// Close modal when clicking outside
+
+window.onclick = function(event){
+if(event.target === modal){
+modal.style.display = "none";
+}
+}
+
+</script>
+
+</body>
+</html>
+

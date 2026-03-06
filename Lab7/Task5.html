@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Student Scores Table</title>
+<style>
+body {
+    font-family: Arial, sans-serif;
+    padding: 20px;
+    background: #f4f4f4;
+    text-align: center;
+}
+
+h1 {
+    margin-bottom: 20px;
+}
+
+input, button {
+    padding: 6px 10px;
+    margin: 5px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+}
+
+button {
+    cursor: pointer;
+    background: #007BFF;
+    color: white;
+    border: none;
+}
+
+button:hover {
+    background: #0056b3;
+}
+
+table {
+    margin: 20px auto;
+    border-collapse: collapse;
+    width: 80%;
+}
+
+th, td {
+    border: 1px solid #333;
+    padding: 10px;
+    text-align: left;
+}
+
+th {
+    cursor: pointer;
+    background: #ddd;
+}
+
+.student-row {
+    background: #f9f9f9;
+}
+
+.course-row {
+    background: #fff;
+}
+
+.low-score {
+    background: #f8d7da !important;
+}
+
+.expand-btn {
+    cursor: pointer;
+    font-weight: bold;
+    margin-right: 5px;
+}
+</style>
+</head>
+<body>
+
+<h1>Student Scores Table</h1>
+
+<div>
+    Search: <input type="text" id="searchInput" placeholder="Student or Course" onkeyup="filterTable()">
+</div>
+
+<table id="studentTable">
+    <thead>
+        <tr>
+            <th onclick="sortTable(0)">Student Name ▲▼</th>
+            <th onclick="sortTable(1)">Course ▲▼</th>
+            <th onclick="sortTable(2)">Score ▲▼</th>
+        </tr>
+    </thead>
+    <tbody id="tableBody">
+        <!-- Dynamic rows go here -->
+    </tbody>
+</table>
+
+<script>
+// Sample data
+const students = [
+    { name: "Yasir", courses: [ { course: "Math", score: 80 }, { course: "History", score: 45 } ] },
+    { name: "Kashan", courses: [ { course: "Math", score: 60 }, { course: "Physics", score: 70 } ] },
+    { name: "Safo ", courses: [ { course: "History", score: 55 }, { course: "Physics", score: 40 } ] },
+];
+
+let sortAsc = [true, true, true]; // Track ascending/descending for each column
+
+function renderTable(data) {
+    const tbody = document.getElementById("tableBody");
+    tbody.innerHTML = ""; // Clear previous table
+
+    data.forEach((student, sIndex) => {
+        // Main student row
+        const trStudent = tbody.insertRow();
+        trStudent.className = "student-row";
+        trStudent.dataset.index = sIndex;
+
+        const tdName = trStudent.insertCell();
+        tdName.colSpan = 1;
+        const expandBtn = document.createElement("span");
+        expandBtn.textContent = "+";
+        expandBtn.className = "expand-btn";
+        expandBtn.onclick = () => toggleCourses(sIndex);
+        tdName.appendChild(expandBtn);
+        tdName.appendChild(document.createTextNode(student.name));
+
+        const tdCoursePlaceholder = trStudent.insertCell();
+        tdCoursePlaceholder.textContent = ""; // Empty placeholder
+        const tdScorePlaceholder = trStudent.insertCell();
+        tdScorePlaceholder.textContent = "";
+
+        // Nested course rows
+        student.courses.forEach(course => {
+            const trCourse = tbody.insertRow();
+            trCourse.className = "course-row";
+            trCourse.dataset.parent = sIndex;
+            trCourse.style.display = "none"; // initially hidden
+
+            const tdCourseName = trCourse.insertCell();
+            tdCourseName.textContent = "";
+            const tdCourseCol = trCourse.insertCell();
+            tdCourseCol.textContent = course.course;
+            const tdScoreCol = trCourse.insertCell();
+            tdScoreCol.textContent = course.score;
+
+            // Conditional styling for low score
+            if(course.score < 50) {
+                trCourse.classList.add("low-score");
+            }
+        });
+    });
+}
+
+// Expand/collapse function
+function toggleCourses(index) {
+    const rows = document.querySelectorAll(`.course-row[data-parent='${index}']`);
+    rows.forEach(row => {
+        row.style.display = row.style.display === "none" ? "" : "none";
+    });
+    // Toggle button symbol
+    const btn = document.querySelector(`.student-row[data-index='${index}'] .expand-btn`);
+    btn.textContent = btn.textContent === "+" ? "−" : "+";
+}
+
+// Sorting function
+function sortTable(colIndex) {
+    const dataCopy = [...students];
+    dataCopy.sort((a, b) => {
+        if(colIndex === 0) {
+            // sort by student name
+            return sortAsc[colIndex] ? a.name.localeCompare(b.name) : b.name.localeCompare(a.name);
+        } else {
+            // sort by course/score: flatten first
+            const aFirst = a.courses[0] || { course: "", score: 0 };
+            const bFirst = b.courses[0] || { course: "", score: 0 };
+            if(colIndex === 1) {
+                return sortAsc[colIndex] ? aFirst.course.localeCompare(bFirst.course) : bFirst.course.localeCompare(aFirst.course);
+            } else {
+                return sortAsc[colIndex] ? aFirst.score - bFirst.score : bFirst.score - aFirst.score;
+            }
+        }
+    });
+    sortAsc[colIndex] = !sortAsc[colIndex]; // toggle
+    renderTable(dataCopy);
+}
+
+// Search/filter function
+function filterTable() {
+    const filter = document.getElementById("searchInput").value.toLowerCase();
+    const filtered = students.map(student => {
+        const filteredCourses = student.courses.filter(c => 
+            student.name.toLowerCase().includes(filter) || c.course.toLowerCase().includes(filter)
+        );
+        if(filteredCourses.length > 0) return { ...student, courses: filteredCourses };
+        return null;
+    }).filter(Boolean);
+    renderTable(filtered);
+}
+
+// Initial render
+renderTable(students);
+</script>
+
+</body>
+</html>

@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Kanban Board</title>
+<style>
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    background: #f4f4f4;
+    margin: 0;
+    padding: 0;
+}
+
+h1 {
+    margin-top: 20px;
+}
+
+.controls {
+    margin: 20px;
+}
+
+input, select {
+    padding: 8px;
+    margin: 5px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+}
+
+button {
+    padding: 8px 12px;
+    cursor: pointer;
+    border: none;
+    border-radius: 4px;
+    background: #007BFF;
+    color: white;
+}
+
+button:hover {
+    background: #0056b3;
+}
+
+/* Board layout */
+.board {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.column {
+    background: white;
+    padding: 10px;
+    width: 250px;
+    border-radius: 8px;
+    box-shadow: 0 0 5px rgba(0,0,0,0.2);
+    min-height: 300px;
+}
+
+.column h2 {
+    margin-bottom: 10px;
+}
+
+/* Tasks */
+.task {
+    background: #eee;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 6px;
+    cursor: grab;
+    position: relative;
+}
+
+/* Priority colors */
+.low { border-left: 6px solid green; }
+.medium { border-left: 6px solid orange; }
+.high { border-left: 6px solid red; }
+
+/* Delete button */
+.delete {
+    position: absolute;
+    right: 8px;
+    top: 5px;
+    cursor: pointer;
+    color: red;
+    font-weight: bold;
+}
+</style>
+</head>
+<body>
+
+<h1>Kanban Board</h1>
+
+<div class="controls">
+    <input type="text" id="taskInput" placeholder="Enter task">
+    <select id="priority">
+        <option value="low">Low</option>
+        <option value="medium">Medium</option>
+        <option value="high">High</option>
+    </select>
+    <button onclick="addTask()">Add Task</button>
+</div>
+
+<div class="board">
+    <div class="column" id="todo" ondragover="allowDrop(event)" ondrop="drop(event)">
+        <h2>To-Do</h2>
+    </div>
+    <div class="column" id="progress" ondragover="allowDrop(event)" ondrop="drop(event)">
+        <h2>In Progress</h2>
+    </div>
+    <div class="column" id="done" ondragover="allowDrop(event)" ondrop="drop(event)">
+        <h2>Done</h2>
+    </div>
+</div>
+
+<script>
+// Load tasks from localStorage or initialize empty array
+let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+
+// Save tasks to localStorage
+function saveTasks() {
+    localStorage.setItem("tasks", JSON.stringify(tasks));
+}
+
+// Create a task element
+function createTaskElement(task) {
+    const div = document.createElement("div");
+    div.className = "task " + task.priority;
+    div.draggable = true;
+    div.id = task.id;
+    div.ondragstart = drag;
+    div.innerHTML = `
+        ${task.text}
+        <span class="delete" onclick="deleteTask('${task.id}')">×</span>
+    `;
+    return div;
+}
+
+// Render all tasks
+function render() {
+    document.querySelectorAll(".column").forEach(col => {
+        col.querySelectorAll(".task").forEach(t => t.remove());
+    });
+    tasks.forEach(task => {
+        const column = document.getElementById(task.status);
+        if (column) column.appendChild(createTaskElement(task));
+    });
+}
+
+// Add a new task
+function addTask() {
+    const text = document.getElementById("taskInput").value.trim();
+    const priority = document.getElementById("priority").value;
+    if (!text) return;
+
+    const task = {
+        id: Date.now().toString(),
+        text: text,
+        priority: priority,
+        status: "todo" // always start in To-Do
+    };
+
+    tasks.push(task);
+    saveTasks();
+    render();
+
+    document.getElementById("taskInput").value = "";
+}
+
+// Delete a task
+function deleteTask(id) {
+    tasks = tasks.filter(t => t.id !== id);
+    saveTasks();
+    render();
+}
+
+// Drag & Drop handlers
+function allowDrop(ev) {
+    ev.preventDefault();
+}
+
+function drag(ev) {
+    ev.dataTransfer.setData("id", ev.target.id);
+}
+
+function drop(ev) {
+    ev.preventDefault();
+    const id = ev.dataTransfer.getData("id");
+    const task = tasks.find(t => t.id === id);
+    if (task) {
+        task.status = ev.currentTarget.id;
+        saveTasks();
+        render();
+    }
+}
+
+// Initial render
+render();
+</script>
+
+</body>
+</html>

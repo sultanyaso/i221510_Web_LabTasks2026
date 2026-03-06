@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Dynamic Table Generator</title>
+<style>
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    background: #f4f4f4;
+    padding: 20px;
+}
+
+h1 {
+    margin-bottom: 20px;
+}
+
+input {
+    padding: 8px;
+    width: 60px;
+    margin: 5px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+}
+
+button {
+    padding: 8px 12px;
+    cursor: pointer;
+    border: none;
+    border-radius: 4px;
+    background: #007BFF;
+    color: white;
+}
+
+button:hover {
+    background: #0056b3;
+}
+
+table {
+    margin: 20px auto;
+    border-collapse: collapse;
+}
+
+td, th {
+    border: 1px solid #333;
+    padding: 10px 15px;
+    min-width: 50px;
+    transition: background 0.3s;
+}
+</style>
+</head>
+<body>
+
+<h1>Dynamic Table Generator</h1>
+
+<div>
+    Rows: <input type="number" id="rows" min="1" max="50" placeholder="Rows">
+    Columns: <input type="number" id="cols" min="1" max="50" placeholder="Cols">
+    <button onclick="generateTable()">Generate Table</button>
+</div>
+
+<div id="tableContainer"></div>
+
+<script>
+function generateTable() {
+    const rows = parseInt(document.getElementById("rows").value);
+    const cols = parseInt(document.getElementById("cols").value);
+    const container = document.getElementById("tableContainer");
+
+    // Validate input
+    if (isNaN(rows) || isNaN(cols) || rows < 1 || cols < 1 || rows > 50 || cols > 50) {
+        alert("Please enter valid numbers between 1 and 50 for rows and columns.");
+        return;
+    }
+
+    // Clear previous table
+    container.innerHTML = "";
+
+    const table = document.createElement("table");
+
+    for (let r = 1; r <= rows; r++) {
+        const tr = document.createElement("tr");
+        
+        // Alternate row colors
+        tr.style.background = r % 2 === 0 ? "#e0e0e0" : "#ffffff";
+
+        for (let c = 1; c <= cols; c++) {
+            const td = document.createElement("td");
+            td.textContent = `(${r},${c})`;
+
+            // Hover effect using JS
+            td.addEventListener("mouseenter", () => {
+                td.style.background = "#ffd700"; // highlight color
+            });
+            td.addEventListener("mouseleave", () => {
+                td.style.background = r % 2 === 0 ? "#e0e0e0" : "#ffffff";
+            });
+
+            tr.appendChild(td);
+        }
+
+        table.appendChild(tr);
+    }
+
+    container.appendChild(table);
+}
+</script>
+
+</body>
+</html>
