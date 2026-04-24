@@ -1,0 +1,117 @@
+.card {
+  display: grid;
+  grid-template-columns: 32px 200px 1fr 100px 120px 90px 36px;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  transition: all 0.2s ease;
+  animation: fadeIn 0.3s ease forwards;
+  text-decoration: none;
+  color: inherit;
+}
+
+.card:hover {
+  background: var(--bg-card-hover);
+  border-color: var(--border-accent);
+  transform: translateX(4px);
+  box-shadow: var(--shadow);
+}
+
+.rank {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+.coinInfo {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+}
+
+.name {
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.symbol {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+
+.price {
+  font-family: var(--font-mono);
+  font-size: 0.95rem;
+  font-weight: 500;
+  transition: color 0.3s;
+}
+
+.flashUp { animation: priceUp 0.8s ease; }
+.flashDown { animation: priceDown 0.8s ease; }
+
+.change {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  font-weight: 500;
+  padding: 0.25rem 0.6rem;
+  border-radius: 6px;
+  text-align: center;
+}
+
+.up {
+  color: var(--green);
+  background: var(--green-dim);
+}
+
+.down {
+  color: var(--red);
+  background: var(--red-dim);
+}
+
+.mcap {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+.sparkWrap {
+  display: flex;
+  justify-content: center;
+}
+
+.spark { display: block; }
+
+.fav {
+  background: none;
+  color: var(--text-muted);
+  font-size: 1.1rem;
+  padding: 4px;
+  border-radius: 6px;
+  transition: all 0.15s;
+  line-height: 1;
+}
+
+.fav:hover { color: var(--gold); }
+.favActive { color: var(--gold) !important; }
+
+@media (max-width: 900px) {
+  .card { grid-template-columns: 24px 1fr 1fr 80px 36px; }
+  .mcap, .sparkWrap { display: none; }
+}
+
+@media (max-width: 600px) {
+  .card { grid-template-columns: 1fr 1fr 70px 32px; padding: 0.75rem 1rem; }
+  .rank { display: none; }
+}

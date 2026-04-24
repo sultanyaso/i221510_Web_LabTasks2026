@@ -1,0 +1,26 @@
+.chart {
+  background: var(--bg-secondary);
+  border-radius: var(--radius);
+  padding: 1rem 0.5rem 0.5rem;
+}
+
+.tooltip {
+  background: var(--bg-card);
+  border: 1px solid var(--border-accent);
+  border-radius: var(--radius-sm);
+  padding: 0.6rem 0.9rem;
+  box-shadow: var(--shadow);
+}
+
+.tooltipDate {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-bottom: 2px;
+}
+
+.tooltipPrice {
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--text-primary);
+}

@@ -1,0 +1,133 @@
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --bg-primary: #0a0a0f;
+  --bg-secondary: #111118;
+  --bg-card: #16161f;
+  --bg-card-hover: #1c1c28;
+  --border: #2a2a3d;
+  --border-accent: #3d3d5c;
+  --text-primary: #f0f0ff;
+  --text-secondary: #8888aa;
+  --text-muted: #55556e;
+  --accent: #6c63ff;
+  --accent-dim: rgba(108, 99, 255, 0.15);
+  --accent-glow: rgba(108, 99, 255, 0.3);
+  --green: #00e5a0;
+  --green-dim: rgba(0, 229, 160, 0.12);
+  --red: #ff4d6a;
+  --red-dim: rgba(255, 77, 106, 0.12);
+  --gold: #ffd166;
+  --font-display: 'Syne', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+  --radius: 12px;
+  --radius-sm: 8px;
+  --shadow: 0 4px 24px rgba(0,0,0,0.4);
+  --shadow-accent: 0 0 32px rgba(108,99,255,0.15);
+}
+
+[data-theme="light"] {
+  --bg-primary: #f4f4ff;
+  --bg-secondary: #eaeaf5;
+  --bg-card: #ffffff;
+  --bg-card-hover: #f0f0ff;
+  --border: #ddddf0;
+  --border-accent: #c4c4e0;
+  --text-primary: #0f0f1a;
+  --text-secondary: #5555777;
+  --text-muted: #9999bb;
+  --accent: #5a52e0;
+  --accent-dim: rgba(90, 82, 224, 0.1);
+  --accent-glow: rgba(90, 82, 224, 0.2);
+  --green: #00b87a;
+  --green-dim: rgba(0, 184, 122, 0.1);
+  --red: #e0324d;
+  --red-dim: rgba(224, 50, 77, 0.1);
+  --shadow: 0 4px 24px rgba(0,0,0,0.08);
+}
+
+html, body {
+  height: 100%;
+  font-family: var(--font-display);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  -webkit-font-smoothing: antialiased;
+  transition: background 0.3s ease, color 0.3s ease;
+}
+
+#root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  cursor: pointer;
+  font-family: var(--font-display);
+  border: none;
+  outline: none;
+}
+
+input {
+  font-family: var(--font-display);
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-secondary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-accent);
+  border-radius: 3px;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+@keyframes priceUp {
+  0% { color: var(--text-primary); }
+  50% { color: var(--green); }
+  100% { color: var(--text-primary); }
+}
+
+@keyframes priceDown {
+  0% { color: var(--text-primary); }
+  50% { color: var(--red); }
+  100% { color: var(--text-primary); }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.skeleton {
+  background: linear-gradient(90deg, var(--bg-card) 25%, var(--bg-card-hover) 50%, var(--bg-card) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: var(--radius-sm);
+}
+
+.fade-in {
+  animation: fadeIn 0.4s ease forwards;
+}
