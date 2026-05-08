@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Student Course Enrollment System</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.development.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.development.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f5f5f7; --surface: #fff; --card: #fafafa;
+    --border: #e5e5ea; --accent: #0071e3; --accent2: #34c759;
+    --danger: #ff3b30; --warn: #ff9500; --purple: #af52de;
+    --text: #1d1d1f; --muted: #6e6e73; --light: #aeaeb2;
+    --nav-w: 220px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; min-height: 100vh; }
+  /* Layout */
+  .app-layout { display: flex; min-height: 100vh; }
+  .sidebar {
+    width: var(--nav-w); background: var(--surface); border-right: 1px solid var(--border);
+    position: fixed; left: 0; top: 0; bottom: 0; display: flex; flex-direction: column;
+    padding: 24px 12px; z-index: 50;
+  }
+  .sidebar-logo { padding: 8px 12px; margin-bottom: 20px; }
+  .sidebar-logo-text { font-size: 1.1rem; font-weight: 800; color: var(--accent); }
+  .sidebar-logo-sub { font-size: 0.7rem; color: var(--muted); font-weight: 500; margin-top: 2px; }
+  .nav-section { margin-bottom: 8px; }
+  .nav-section-label { font-size: 0.65rem; font-weight: 700; color: var(--light); letter-spacing: 1px; text-transform: uppercase; padding: 0 12px; margin-bottom: 6px; }
+  .nav-item {
+    display: flex; align-items: center; gap: 10px; padding: 10px 12px;
+    border-radius: 10px; cursor: pointer; transition: all 0.15s;
+    font-size: 0.85rem; font-weight: 600; color: var(--muted);
+    border: none; background: none; width: 100%; text-align: left;
+  }
+  .nav-item:hover { background: var(--bg); color: var(--text); }
+  .nav-item.active { background: #e8f0fd; color: var(--accent); }
+  .nav-icon { font-size: 1rem; width: 20px; text-align: center; }
+  .nav-badge { margin-left: auto; background: var(--accent); color: #fff; padding: 2px 8px; border-radius: 99px; font-size: 0.65rem; font-weight: 700; }
+  .main-content { margin-left: var(--nav-w); flex: 1; padding: 32px; }
+  /* Page Header */
+  .page-header { margin-bottom: 28px; display: flex; align-items: flex-start; justify-content: space-between; }
+  .page-title { font-size: 1.6rem; font-weight: 800; letter-spacing: -0.5px; }
+  .page-breadcrumb { font-size: 0.78rem; color: var(--muted); margin-top: 4px; }
+  /* Cards */
+  .content-grid { display: grid; grid-template-columns: 400px 1fr; gap: 20px; }
+  .form-card { background: var(--surface); border-radius: 16px; border: 1px solid var(--border); padding: 24px; height: fit-content; }
+  .form-card-title { font-size: 1rem; font-weight: 700; margin-bottom: 18px; display: flex; align-items: center; gap: 8px; }
+  .table-card { background: var(--surface); border-radius: 16px; border: 1px solid var(--border); overflow: hidden; }
+  .table-card-header { padding: 18px 22px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+  .table-card-title { font-size: 0.9rem; font-weight: 700; }
+  /* Form */
+  .form-group { margin-bottom: 14px; }
+  .form-label { font-size: 0.75rem; font-weight: 700; color: var(--muted); display: block; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.4px; }
+  .form-input, .form-select {
+    width: 100%; padding: 10px 14px; border: 1.5px solid var(--border); border-radius: 10px;
+    font-family: 'DM Sans', sans-serif; font-size: 0.88rem; color: var(--text);
+    background: var(--card); outline: none; transition: border-color 0.2s;
+  }
+  .form-input:focus, .form-select:focus { border-color: var(--accent); background: #fff; }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .submit-btn {
+    width: 100%; padding: 12px; border-radius: 10px; background: var(--accent);
+    color: #fff; border: none; font-family: 'DM Sans', sans-serif; font-size: 0.9rem;
+    font-weight: 700; cursor: pointer; transition: all 0.15s; margin-top: 6px;
+  }
+  .submit-btn:hover { background: #0056b3; }
+  .submit-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  .submit-btn.loading::after { content: ' ⟳'; animation: spin 1s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  /* Table */
+  table { width: 100%; border-collapse: collapse; }
+  thead tr { background: var(--card); }
+  th { padding: 12px 18px; font-size: 0.72rem; font-weight: 700; color: var(--muted); text-align: left; text-transform: uppercase; letter-spacing: 0.5px; }
+  td { padding: 13px 18px; font-size: 0.85rem; border-top: 1px solid var(--border); }
+  tr:hover td { background: var(--bg); }
+  .del-btn { padding: 5px 12px; border-radius: 6px; background: #fff1f0; border: 1px solid #ffd4d2; color: var(--danger); font-size: 0.75rem; font-weight: 700; cursor: pointer; transition: all 0.15s; font-family: 'DM Sans', sans-serif; }
+  .del-btn:hover { background: var(--danger); color: #fff; border-color: var(--danger); }
+  .empty-table { text-align: center; padding: 48px; color: var(--muted); }
+  .empty-table-icon { font-size: 2.5rem; margin-bottom: 10px; }
+  .empty-table-text { font-size: 0.88rem; }
+  /* Badges */
+  .badge { padding: 3px 10px; border-radius: 8px; font-size: 0.72rem; font-weight: 700; display: inline-block; }
+  .badge-blue   { background: #e8f0fd; color: var(--accent); }
+  .badge-green  { background: #e9f9ee; color: #1a7a34; }
+  .badge-purple { background: #f5eaff; color: #7229a0; }
+  .badge-orange { background: #fff4e6; color: #b85c00; }
+  /* Alerts */
+  .alert { padding: 12px 16px; border-radius: 10px; font-size: 0.82rem; font-weight: 600; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+  .alert-success { background: #e9f9ee; border: 1px solid #a8e6b8; color: #0d5c27; }
+  .alert-error   { background: #fff1f0; border: 1px solid #ffd4d2; color: #9b1c1c; }
+  .alert-loading { background: #e8f0fd; border: 1px solid #b3d1fa; color: #1a4a7a; }
+  /* Home Stats */
+  .home-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 28px; }
+  .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 22px; }
+  .stat-icon { font-size: 1.8rem; margin-bottom: 10px; }
+  .stat-num { font-size: 2.2rem; font-weight: 800; letter-spacing: -1px; }
+  .stat-label { font-size: 0.75rem; color: var(--muted); font-weight: 600; margin-top: 4px; }
+  .recent-section { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .recent-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 22px; }
+  .recent-title { font-size: 0.85rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 16px; }
+  .recent-item { display: flex; align-items: center; gap: 12px; padding: 9px 0; border-bottom: 1px solid var(--border); }
+  .recent-item:last-child { border-bottom: none; }
+  .avatar { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 700; flex-shrink: 0; }
+  .recent-info { flex: 1; }
+  .recent-name { font-size: 0.85rem; font-weight: 600; }
+  .recent-sub { font-size: 0.72rem; color: var(--muted); }
+  .table-count { font-size: 0.75rem; color: var(--muted); background: var(--bg); padding: 4px 10px; border-radius: 8px; font-weight: 600; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { useReducer, useState, useMemo, useCallback, useEffect } = React;
+
+// ─── Redux Toolkit Simulation ─────────────────────────────────────────────────
+// createSlice simulation
+function createSlice(config) {
+  const actions = {};
+  Object.keys(config.reducers).forEach(key => {
+    actions[key] = (payload) => ({ type: `${config.name}/${key}`, payload });
+  });
+  function reducer(state = config.initialState, action) {
+    const parts = action.type.split('/');
+    if (parts[0] === config.name && config.reducers[parts[1]]) {
+      const draft = JSON.parse(JSON.stringify(state));
+      config.reducers[parts[1]](draft, action);
+      return draft;
+    }
+    return state;
+  }
+  return { actions, reducer };
+}
+
+// ─── Slices ───────────────────────────────────────────────────────────────────
+let nextId = { students: 4, courses: 5, enrollments: 4 };
+
+const studentSlice = createSlice({
+  name: 'students',
+  initialState: {
+    items: [
+      { _id:'s1', name:'Ayesha Khan',   email:'ayesha@uni.edu.pk', semester:'5th' },
+      { _id:'s2', name:'Bilal Raza',    email:'bilal@uni.edu.pk',  semester:'3rd' },
+      { _id:'s3', name:'Sara Ahmed',    email:'sara@uni.edu.pk',   semester:'7th' },
+    ],
+    loading: false, error: null, success: null,
+  },
+  reducers: {
+    setLoading:  (s, a) => { s.loading = a.payload; },
+    setError:    (s, a) => { s.error = a.payload; s.loading = false; },
+    setSuccess:  (s, a) => { s.success = a.payload; setTimeout(() => {}, 3000); },
+    clearMsg:    (s)    => { s.error = null; s.success = null; },
+    addStudent:  (s, a) => { s.items.push(a.payload); s.loading = false; s.success = 'Student added!'; },
+    deleteStudent:(s,a) => { s.items = s.items.filter(i => i._id !== a.payload); s.success = 'Student deleted.'; },
+  },
+});
+
+const courseSlice = createSlice({
+  name: 'courses',
+  initialState: {
+    items: [
+      { _id:'c1', title:'Web Engineering',         instructor:'Dr. Hassan',  creditHours:3 },
+      { _id:'c2', title:'Data Structures',         instructor:'Prof. Amina', creditHours:3 },
+      { _id:'c3', title:'Database Systems',        instructor:'Dr. Kamran',  creditHours:4 },
+      { _id:'c4', title:'Software Engineering',    instructor:'Dr. Zara',    creditHours:3 },
+    ],
+    loading: false, error: null, success: null,
+  },
+  reducers: {
+    setLoading:  (s, a) => { s.loading = a.payload; },
+    setError:    (s, a) => { s.error = a.payload; s.loading = false; },
+    clearMsg:    (s)    => { s.error = null; s.success = null; },
+    addCourse:   (s, a) => { s.items.push(a.payload); s.loading = false; s.success = 'Course added!'; },
+    deleteCourse:(s, a) => { s.items = s.items.filter(i => i._id !== a.payload); s.success = 'Course deleted.'; },
+  },
+});
+
+const enrollmentSlice = createSlice({
+  name: 'enrollments',
+  initialState: {
+    items: [
+      { _id:'e1', studentId:'s1', courseId:'c1' },
+      { _id:'e2', studentId:'s1', courseId:'c3' },
+      { _id:'e3', studentId:'s2', courseId:'c2' },
+    ],
+    loading: false, error: null, success: null,
+  },
+  reducers: {
+    setLoading:    (s, a) => { s.loading = a.payload; },
+    setError:      (s, a) => { s.error = a.payload; s.loading = false; },
+    clearMsg:      (s)    => { s.error = null; s.success = null; },
+    addEnrollment: (s, a) => { s.items.push(a.payload); s.loading = false; s.success = 'Enrolled successfully!'; },
+    deleteEnrollment:(s,a)=> { s.items = s.items.filter(i => i._id !== a.payload); s.success = 'Enrollment removed.'; },
+  },
+});
+
+// Root reducer
+function rootReducer(state = {}, action) {
+  return {
+    students: studentSlice.reducer(state.students, action),
+    courses: courseSlice.reducer(state.courses, action),
+    enrollments: enrollmentSlice.reducer(state.enrollments, action),
+  };
+}
+
+// ─── Async Thunks (simulated API calls) ───────────────────────────────────────
+function simulateAPI(ms = 600) { return new Promise(r => setTimeout(r, ms)); }
+
+const SA = studentSlice.actions;
+const CA = courseSlice.actions;
+const EA = enrollmentSlice.actions;
+
+function useThunks(dispatch, state) {
+  const addStudent = async (data) => {
+    dispatch(SA.setLoading(true));
+    await simulateAPI();
+    const id = 's' + (++nextId.students);
+    dispatch(SA.addStudent({ ...data, _id: id }));
+  };
+  const deleteStudent = async (id) => {
+    await simulateAPI(300);
+    dispatch(SA.deleteStudent(id));
+  };
+  const addCourse = async (data) => {
+    dispatch(CA.setLoading(true));
+    await simulateAPI();
+    const id = 'c' + (++nextId.courses);
+    dispatch(CA.addCourse({ ...data, creditHours: +data.creditHours, _id: id }));
+  };
+  const deleteCourse = async (id) => {
+    await simulateAPI(300);
+    dispatch(CA.deleteCourse(id));
+  };
+  const addEnrollment = async (data) => {
+    const already = state.enrollments.items.find(e => e.studentId === data.studentId && e.courseId === data.courseId);
+    if (already) { dispatch(EA.setError('Student already enrolled in this course!')); return; }
+    dispatch(EA.setLoading(true));
+    await simulateAPI();
+    const id = 'e' + (++nextId.enrollments);
+    dispatch(EA.addEnrollment({ ...data, _id: id }));
+  };
+  const deleteEnrollment = async (id) => {
+    await simulateAPI(300);
+    dispatch(EA.deleteEnrollment(id));
+  };
+  return { addStudent, deleteStudent, addCourse, deleteCourse, addEnrollment, deleteEnrollment };
+}
+
+// ─── Alert ────────────────────────────────────────────────────────────────────
+function Alert({ msg, type, onClear }) {
+  useEffect(() => { if (msg) { const t = setTimeout(onClear, 3000); return () => clearTimeout(t); } }, [msg]);
+  if (!msg) return null;
+  const cls = type === 'error' ? 'alert-error' : type === 'loading' ? 'alert-loading' : 'alert-success';
+  const icon = type === 'error' ? '⚠️' : type === 'loading' ? '⟳' : '✓';
+  return <div className={`alert ${cls}`}>{icon} {msg}</div>;
+}
+
+// ─── Students Page ─────────────────────────────────────────────────────────────
+function StudentsPage({ state, dispatch, thunks }) {
+  const [form, setForm] = useState({ name:'', email:'', semester:'' });
+  const [loading, setLoading] = useState(false);
+  const { students } = state;
+
+  const handleSubmit = async () => {
+    if (!form.name || !form.email || !form.semester) { dispatch(SA.setError('All fields required!')); return; }
+    setLoading(true);
+    await thunks.addStudent(form);
+    setForm({ name:'', email:'', semester:'' });
+    setLoading(false);
+  };
+
+  const avatarColors = ['#dbeafe:#1e40af','#fce7f3:#9d174d','#d1fae5:#065f46','#ede9fe:#4c1d95','#fee2e2:#991b1b'];
+
+  return (
+    <div>
+      <div className="page-header">
+        <div><div className="page-title">👨‍🎓 Students</div><div className="page-breadcrumb">Home / Manage Students</div></div>
+      </div>
+      <div className="content-grid">
+        <div className="form-card">
+          <div className="form-card-title">➕ Add New Student</div>
+          <Alert msg={students.error} type="error" onClear={() => dispatch(SA.clearMsg())} />
+          <Alert msg={students.success} type="success" onClear={() => dispatch(SA.clearMsg())} />
+          <div className="form-group"><label className="form-label">Full Name</label><input className="form-input" placeholder="e.g. Ahmed Ali" value={form.name} onChange={e => setForm({...form, name:e.target.value})} /></div>
+          <div className="form-group"><label className="form-label">Email Address</label><input className="form-input" type="email" placeholder="student@university.edu.pk" value={form.email} onChange={e => setForm({...form, email:e.target.value})} /></div>
+          <div className="form-group">
+            <label className="form-label">Semester</label>
+            <select className="form-select" value={form.semester} onChange={e => setForm({...form, semester:e.target.value})}>
+              <option value="">Select Semester</option>
+              {['1st','2nd','3rd','4th','5th','6th','7th','8th'].map(s => <option key={s}>{s}</option>)}
+            </select>
+          </div>
+          <button className={`submit-btn ${loading?'loading':''}`} onClick={handleSubmit} disabled={loading}>
+            {loading ? 'Adding...' : 'Add Student'}
+          </button>
+        </div>
+        <div className="table-card">
+          <div className="table-card-header">
+            <span className="table-card-title">All Students</span>
+            <span className="table-count">{students.items.length} total</span>
+          </div>
+          {students.items.length === 0 ? (
+            <div className="empty-table"><div className="empty-table-icon">👨‍🎓</div><div className="empty-table-text">No students yet</div></div>
+          ) : (
+            <table>
+              <thead><tr><th>#</th><th>Student</th><th>Email</th><th>Semester</th><th>Action</th></tr></thead>
+              <tbody>
+                {students.items.map((s, i) => {
+                  const [bg, color] = avatarColors[i % avatarColors.length].split(':');
+                  return (
+                    <tr key={s._id}>
+                      <td><span style={{fontFamily:'DM Mono',fontSize:'0.78rem',color:'var(--muted)'}}>{String(i+1).padStart(2,'0')}</span></td>
+                      <td>
+                        <div style={{display:'flex',alignItems:'center',gap:10}}>
+                          <div className="avatar" style={{background:bg,color}}>{s.name.split(' ').map(n=>n[0]).join('')}</div>
+                          <div>
+                            <div style={{fontWeight:600}}>{s.name}</div>
+                          </div>
+                        </div>
+                      </td>
+                      <td><span style={{fontFamily:'DM Mono',fontSize:'0.8rem',color:'var(--muted)'}}>{s.email}</span></td>
+                      <td><span className="badge badge-blue">{s.semester} Sem</span></td>
+                      <td><button className="del-btn" onClick={() => thunks.deleteStudent(s._id)}>Delete</button></td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── Courses Page ─────────────────────────────────────────────────────────────
+function CoursesPage({ state, dispatch, thunks }) {
+  const [form, setForm] = useState({ title:'', instructor:'', creditHours:'' });
+  const [loading, setLoading] = useState(false);
+  const { courses } = state;
+
+  const handleSubmit = async () => {
+    if (!form.title || !form.instructor || !form.creditHours) { dispatch(CA.setError('All fields required!')); return; }
+    setLoading(true);
+    await thunks.addCourse(form);
+    setForm({ title:'', instructor:'', creditHours:'' });
+    setLoading(false);
+  };
+
+  const creditColors = { 1:'badge-green', 2:'badge-blue', 3:'badge-blue', 4:'badge-purple', 5:'badge-orange' };
+
+  return (
+    <div>
+      <div className="page-header">
+        <div><div className="page-title">📚 Courses</div><div className="page-breadcrumb">Home / Manage Courses</div></div>
+      </div>
+      <div className="content-grid">
+        <div className="form-card">
+          <div className="form-card-title">➕ Add New Course</div>
+          <Alert msg={courses.error} type="error" onClear={() => dispatch(CA.clearMsg())} />
+          <Alert msg={courses.success} type="success" onClear={() => dispatch(CA.clearMsg())} />
+          <div className="form-group"><label className="form-label">Course Title</label><input className="form-input" placeholder="e.g. Artificial Intelligence" value={form.title} onChange={e => setForm({...form, title:e.target.value})} /></div>
+          <div className="form-group"><label className="form-label">Instructor Name</label><input className="form-input" placeholder="e.g. Dr. Farrukh" value={form.instructor} onChange={e => setForm({...form, instructor:e.target.value})} /></div>
+          <div className="form-group">
+            <label className="form-label">Credit Hours</label>
+            <select className="form-select" value={form.creditHours} onChange={e => setForm({...form, creditHours:e.target.value})}>
+              <option value="">Select Credit Hours</option>
+              {[1,2,3,4,5].map(n => <option key={n}>{n}</option>)}
+            </select>
+          </div>
+          <button className={`submit-btn ${loading?'loading':''}`} onClick={handleSubmit} disabled={loading}>
+            {loading ? 'Adding...' : 'Add Course'}
+          </button>
+        </div>
+        <div className="table-card">
+          <div className="table-card-header">
+            <span className="table-card-title">All Courses</span>
+            <span className="table-count">{courses.items.length} total</span>
+          </div>
+          {courses.items.length === 0 ? (
+            <div className="empty-table"><div className="empty-table-icon">📚</div><div className="empty-table-text">No courses yet</div></div>
+          ) : (
+            <table>
+              <thead><tr><th>#</th><th>Course Title</th><th>Instructor</th><th>Credits</th><th>Action</th></tr></thead>
+              <tbody>
+                {courses.items.map((c, i) => (
+                  <tr key={c._id}>
+                    <td><span style={{fontFamily:'DM Mono',fontSize:'0.78rem',color:'var(--muted)'}}>{String(i+1).padStart(2,'0')}</span></td>
+                    <td><span style={{fontWeight:600}}>{c.title}</span></td>
+                    <td><span style={{color:'var(--muted)'}}>{c.instructor}</span></td>
+                    <td><span className={`badge ${creditColors[c.creditHours]||'badge-blue'}`}>{c.creditHours} CR</span></td>
+                    <td><button className="del-btn" onClick={() => thunks.deleteCourse(c._id)}>Delete</button></td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── Enrollments Page ─────────────────────────────────────────────────────────
+function EnrollmentsPage({ state, dispatch, thunks }) {
+  const [form, setForm] = useState({ studentId:'', courseId:'' });
+  const [loading, setLoading] = useState(false);
+  const { enrollments, students, courses } = state;
+
+  const handleSubmit = async () => {
+    if (!form.studentId || !form.courseId) { dispatch(EA.setError('Please select both student and course!')); return; }
+    setLoading(true);
+    await thunks.addEnrollment(form);
+    setForm({ studentId:'', courseId:'' });
+    setLoading(false);
+  };
+
+  // Populate enrollments
+  const populated = enrollments.items.map(e => ({
+    ...e,
+    student: students.items.find(s => s._id === e.studentId),
+    course:  courses.items.find(c => c._id === e.courseId),
+  }));
+
+  return (
+    <div>
+      <div className="page-header">
+        <div><div className="page-title">🎓 Enrollments</div><div className="page-breadcrumb">Home / Manage Enrollments</div></div>
+      </div>
+      <div className="content-grid">
+        <div className="form-card">
+          <div className="form-card-title">➕ Enroll Student</div>
+          <Alert msg={enrollments.error} type="error" onClear={() => dispatch(EA.clearMsg())} />
+          <Alert msg={enrollments.success} type="success" onClear={() => dispatch(EA.clearMsg())} />
+          <div className="form-group">
+            <label className="form-label">Select Student</label>
+            <select className="form-select" value={form.studentId} onChange={e => setForm({...form, studentId:e.target.value})}>
+              <option value="">-- Choose Student --</option>
+              {students.items.map(s => <option key={s._id} value={s._id}>{s.name} ({s.semester} Sem)</option>)}
+            </select>
+          </div>
+          <div className="form-group">
+            <label className="form-label">Select Course</label>
+            <select className="form-select" value={form.courseId} onChange={e => setForm({...form, courseId:e.target.value})}>
+              <option value="">-- Choose Course --</option>
+              {courses.items.map(c => <option key={c._id} value={c._id}>{c.title} ({c.creditHours}CR)</option>)}
+            </select>
+          </div>
+          <button className={`submit-btn ${loading?'loading':''}`} onClick={handleSubmit} disabled={loading}>
+            {loading ? 'Enrolling...' : '🎓 Enroll Now'}
+          </button>
+          <div style={{background:'var(--card)',border:'1px solid var(--border)',borderRadius:10,padding:'12px 14px',marginTop:14,fontSize:'0.78rem',color:'var(--muted)'}}>
+            <strong style={{color:'var(--text)'}}>Note:</strong> Each student can only be enrolled once per course. Duplicate enrollments are prevented.
+          </div>
+        </div>
+        <div className="table-card">
+          <div className="table-card-header">
+            <span className="table-card-title">All Enrollments</span>
+            <span className="table-count">{enrollments.items.length} total</span>
+          </div>
+          {populated.length === 0 ? (
+            <div className="empty-table"><div className="empty-table-icon">🎓</div><div className="empty-table-text">No enrollments yet</div></div>
+          ) : (
+            <table>
+              <thead><tr><th>#</th><th>Student</th><th>Course</th><th>Instructor</th><th>Credits</th><th>Action</th></tr></thead>
+              <tbody>
+                {populated.map((e, i) => (
+                  <tr key={e._id}>
+                    <td><span style={{fontFamily:'DM Mono',fontSize:'0.78rem',color:'var(--muted)'}}>{String(i+1).padStart(2,'0')}</span></td>
+                    <td>
+                      <div style={{fontWeight:600}}>{e.student?.name || '—'}</div>
+                      <div style={{fontSize:'0.72rem',color:'var(--muted)'}}>{e.student?.semester} Semester</div>
+                    </td>
+                    <td><span style={{fontWeight:600}}>{e.course?.title || '—'}</span></td>
+                    <td><span style={{color:'var(--muted)'}}>{e.course?.instructor || '—'}</span></td>
+                    <td>{e.course && <span className="badge badge-purple">{e.course.creditHours} CR</span>}</td>
+                    <td><button className="del-btn" onClick={() => thunks.deleteEnrollment(e._id)}>Remove</button></td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── Home Page ─────────────────────────────────────────────────────────────────
+function HomePage({ state }) {
+  const { students, courses, enrollments } = state;
+  const totalCredits = enrollments.items.reduce((s, e) => {
+    const c = courses.items.find(c => c._id === e.courseId);
+    return s + (c ? c.creditHours : 0);
+  }, 0);
+
+  return (
+    <div>
+      <div className="page-header">
+        <div><div className="page-title">🏠 Dashboard</div><div className="page-breadcrumb">Course Enrollment System — MERN Stack</div></div>
+      </div>
+      <div className="home-stats">
+        {[
+          ['👨‍🎓', students.items.length, 'Total Students', 'var(--accent)'],
+          ['📚', courses.items.length, 'Total Courses', 'var(--purple)'],
+          ['🎓', enrollments.items.length, 'Enrollments', 'var(--accent2)'],
+          ['⚡', totalCredits, 'Credit Hours', 'var(--warn)'],
+        ].map(([icon, num, label, color]) => (
+          <div className="stat-card" key={label}>
+            <div className="stat-icon">{icon}</div>
+            <div className="stat-num" style={{color}}>{num}</div>
+            <div className="stat-label">{label}</div>
+          </div>
+        ))}
+      </div>
+      <div className="recent-section">
+        <div className="recent-card">
+          <div className="recent-title">Recent Students</div>
+          {students.items.slice(-4).reverse().map((s, i) => (
+            <div className="recent-item" key={s._id}>
+              <div className="avatar" style={{background:'#e8f0fd',color:'var(--accent)'}}>{s.name.split(' ').map(n=>n[0]).join('')}</div>
+              <div className="recent-info">
+                <div className="recent-name">{s.name}</div>
+                <div className="recent-sub">{s.email} · {s.semester} Sem</div>
+              </div>
+              <span className="badge badge-blue">{s.semester}</span>
+            </div>
+          ))}
+        </div>
+        <div className="recent-card">
+          <div className="recent-title">Recent Enrollments</div>
+          {enrollments.items.slice(-4).reverse().map((e) => {
+            const s = students.items.find(st => st._id === e.studentId);
+            const c = courses.items.find(co => co._id === e.courseId);
+            return (
+              <div className="recent-item" key={e._id}>
+                <div className="avatar" style={{background:'#d1fae5',color:'var(--accent2)'}}>🎓</div>
+                <div className="recent-info">
+                  <div className="recent-name">{s?.name || '—'}</div>
+                  <div className="recent-sub">{c?.title || '—'}</div>
+                </div>
+                {c && <span className="badge badge-purple">{c.creditHours}CR</span>}
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── App ─────────────────────────────────────────────────────────────────────
+function App() {
+  const [state, dispatch] = useReducer(rootReducer, rootReducer(undefined, { type: '@@init' }));
+  const [page, setPage] = useState('home');
+  const thunks = useThunks(dispatch, state);
+
+  const nav = [
+    { id:'home',        icon:'🏠', label:'Dashboard' },
+    { id:'students',    icon:'👨‍🎓', label:'Students',   badge: state.students.items.length },
+    { id:'courses',     icon:'📚', label:'Courses',    badge: state.courses.items.length },
+    { id:'enrollments', icon:'🎓', label:'Enrollments',badge: state.enrollments.items.length },
+  ];
+
+  return (
+    <div className="app-layout">
+      <div className="sidebar">
+        <div className="sidebar-logo">
+          <div className="sidebar-logo-text">EduEnroll</div>
+          <div className="sidebar-logo-sub">MERN • Redux Toolkit</div>
+        </div>
+        <div className="nav-section">
+          <div className="nav-section-label">Navigation</div>
+          {nav.map(item => (
+            <button key={item.id} className={`nav-item ${page===item.id?'active':''}`} onClick={() => setPage(item.id)}>
+              <span className="nav-icon">{item.icon}</span>
+              {item.label}
+              {item.badge !== undefined && <span className="nav-badge">{item.badge}</span>}
+            </button>
+          ))}
+        </div>
+        <div style={{marginTop:'auto',padding:'12px',background:'var(--bg)',borderRadius:12,fontSize:'0.72rem',color:'var(--muted)'}}>
+          <div style={{fontWeight:700,color:'var(--text)',marginBottom:4}}>Tech Stack</div>
+          MongoDB · Express · React · Node<br />Redux Toolkit · Axios
+        </div>
+      </div>
+      <div className="main-content">
+        {page === 'home'        && <HomePage        state={state} />}
+        {page === 'students'    && <StudentsPage    state={state} dispatch={dispatch} thunks={thunks} />}
+        {page === 'courses'     && <CoursesPage     state={state} dispatch={dispatch} thunks={thunks} />}
+        {page === 'enrollments' && <EnrollmentsPage state={state} dispatch={dispatch} thunks={thunks} />}
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>
