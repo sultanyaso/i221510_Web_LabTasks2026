@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Online Pharmacy System</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.development.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.development.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f0f4f8; --surface: #ffffff; --card: #f8fafc;
+    --border: #e2e8f0; --accent: #0ea5e9; --accent2: #10b981;
+    --danger: #ef4444; --warn: #f59e0b;
+    --text: #0f172a; --muted: #64748b; --light: #94a3b8;
+    --header-h: 64px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: 'Plus Jakarta Sans', sans-serif; min-height: 100vh; }
+  /* Header */
+  .header {
+    position: fixed; top: 0; left: 0; right: 0; height: var(--header-h);
+    background: var(--surface); border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; padding: 0 24px; gap: 16px; z-index: 100;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  }
+  .logo { font-size: 1.2rem; font-weight: 800; color: var(--accent); letter-spacing: -0.5px; }
+  .logo em { color: var(--text); font-style: normal; }
+  .nav { display: flex; gap: 4px; margin-left: 24px; }
+  .nav-btn {
+    padding: 6px 16px; border-radius: 8px; border: none; background: transparent;
+    font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.85rem; font-weight: 600;
+    color: var(--muted); cursor: pointer; transition: all 0.15s;
+  }
+  .nav-btn.active { background: #e0f2fe; color: var(--accent); }
+  .nav-btn:hover:not(.active) { background: var(--card); color: var(--text); }
+  .header-right { margin-left: auto; display: flex; align-items: center; gap: 12px; }
+  .cart-btn {
+    position: relative; padding: 8px 16px; border-radius: 10px;
+    background: var(--accent); color: #fff; border: none;
+    font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.85rem; font-weight: 700;
+    cursor: pointer; display: flex; align-items: center; gap: 8px;
+  }
+  .cart-badge {
+    position: absolute; top: -6px; right: -6px; width: 20px; height: 20px;
+    border-radius: 50%; background: var(--danger); color: #fff;
+    font-size: 0.65rem; font-weight: 800; display: flex; align-items: center; justify-content: center;
+    border: 2px solid var(--surface);
+  }
+  /* Layout */
+  .main { margin-top: var(--header-h); padding: 28px 24px; max-width: 1400px; margin-left: auto; margin-right: auto; }
+  /* Page: Medicines */
+  .medicines-layout { display: grid; grid-template-columns: 240px 1fr; gap: 20px; }
+  .filters-panel { background: var(--surface); border-radius: 14px; border: 1px solid var(--border); padding: 20px; height: fit-content; position: sticky; top: calc(var(--header-h) + 20px); }
+  .filters-title { font-size: 0.75rem; font-weight: 700; letter-spacing: 1px; color: var(--muted); text-transform: uppercase; margin-bottom: 16px; }
+  .filter-group { margin-bottom: 20px; }
+  .filter-label { font-size: 0.78rem; font-weight: 700; color: var(--text); margin-bottom: 8px; display: block; }
+  .filter-option {
+    display: flex; align-items: center; gap: 8px;
+    padding: 7px 10px; border-radius: 8px; cursor: pointer;
+    font-size: 0.82rem; color: var(--muted); transition: all 0.15s; margin-bottom: 2px;
+  }
+  .filter-option:hover { background: var(--card); color: var(--text); }
+  .filter-option.active { background: #e0f2fe; color: var(--accent); font-weight: 600; }
+  .filter-dot { width: 8px; height: 8px; border-radius: 50%; }
+  .price-range { display: flex; flex-direction: column; gap: 8px; }
+  .range-labels { display: flex; justify-content: space-between; font-size: 0.72rem; color: var(--muted); font-family: 'Fira Code', monospace; }
+  input[type=range] { width: 100%; accent-color: var(--accent); }
+  .medicines-content { display: flex; flex-direction: column; gap: 16px; }
+  .search-bar {
+    display: flex; gap: 10px; background: var(--surface);
+    border: 1px solid var(--border); border-radius: 12px; padding: 10px 16px;
+    align-items: center;
+  }
+  .search-bar input {
+    flex: 1; border: none; outline: none; font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 0.9rem; color: var(--text); background: transparent;
+  }
+  .search-bar input::placeholder { color: var(--light); }
+  .search-icon { color: var(--light); font-size: 1rem; }
+  .medicines-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 14px; }
+  .med-card {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 14px;
+    padding: 18px; display: flex; flex-direction: column; gap: 10px;
+    transition: all 0.2s; cursor: default;
+  }
+  .med-card:hover { border-color: var(--accent); box-shadow: 0 4px 16px rgba(14,165,233,0.1); transform: translateY(-2px); }
+  .med-icon { font-size: 2rem; }
+  .med-name { font-size: 0.92rem; font-weight: 700; }
+  .med-category { font-size: 0.7rem; font-weight: 600; padding: 3px 8px; border-radius: 6px; width: fit-content; }
+  .med-price { font-size: 1.1rem; font-weight: 800; color: var(--accent); font-family: 'Fira Code', monospace; }
+  .med-stock { font-size: 0.72rem; color: var(--muted); }
+  .add-cart-btn {
+    padding: 8px; border-radius: 8px; background: var(--accent); color: #fff;
+    border: none; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.8rem;
+    font-weight: 700; cursor: pointer; transition: all 0.15s; width: 100%;
+  }
+  .add-cart-btn:hover { background: #0284c7; }
+  .add-cart-btn.in-cart { background: var(--accent2); }
+  /* Cart Panel */
+  .cart-panel-overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.3); z-index: 200;
+    display: flex; justify-content: flex-end;
+  }
+  .cart-panel {
+    width: 400px; background: var(--surface); height: 100%;
+    display: flex; flex-direction: column; box-shadow: -4px 0 24px rgba(0,0,0,0.1);
+  }
+  .cart-header { padding: 20px 24px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+  .cart-title { font-size: 1.1rem; font-weight: 800; }
+  .close-btn { background: none; border: none; font-size: 1.4rem; cursor: pointer; color: var(--muted); }
+  .cart-items { flex: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 10px; }
+  .cart-item {
+    background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+    padding: 14px; display: flex; gap: 12px; align-items: center;
+  }
+  .cart-item-icon { font-size: 1.6rem; }
+  .cart-item-info { flex: 1; }
+  .cart-item-name { font-size: 0.85rem; font-weight: 700; }
+  .cart-item-price { font-size: 0.8rem; color: var(--accent); font-family: 'Fira Code', monospace; font-weight: 600; }
+  .qty-ctrl { display: flex; align-items: center; gap: 8px; }
+  .qty-btn { width: 28px; height: 28px; border-radius: 6px; border: 1px solid var(--border); background: var(--surface); font-size: 1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.15s; }
+  .qty-btn:hover { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .qty-val { font-size: 0.85rem; font-weight: 700; min-width: 20px; text-align: center; }
+  .remove-btn { background: none; border: none; color: var(--danger); cursor: pointer; font-size: 1rem; padding: 4px; }
+  .cart-footer { padding: 20px 24px; border-top: 1px solid var(--border); }
+  .cart-total { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+  .cart-total-label { font-size: 0.85rem; color: var(--muted); font-weight: 600; }
+  .cart-total-val { font-size: 1.4rem; font-weight: 800; color: var(--text); font-family: 'Fira Code', monospace; }
+  .checkout-btn {
+    width: 100%; padding: 14px; border-radius: 12px; background: var(--accent);
+    color: #fff; border: none; font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 1rem; font-weight: 700; cursor: pointer; transition: all 0.15s;
+  }
+  .checkout-btn:hover { background: #0284c7; }
+  .empty-cart { text-align: center; padding: 60px 20px; color: var(--muted); }
+  .empty-cart .icon { font-size: 3rem; margin-bottom: 12px; }
+  /* Dashboard */
+  .dashboard-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 24px; }
+  .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 22px; }
+  .stat-icon { font-size: 1.8rem; margin-bottom: 10px; }
+  .stat-val { font-size: 2rem; font-weight: 800; font-family: 'Fira Code', monospace; }
+  .stat-label { font-size: 0.78rem; color: var(--muted); font-weight: 600; margin-top: 4px; }
+  .analytics-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .analytics-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 22px; }
+  .analytics-title { font-size: 0.8rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 16px; }
+  .top-med-item { display: flex; align-items: center; gap: 12px; padding: 8px 0; border-bottom: 1px solid var(--border); }
+  .top-med-item:last-child { border-bottom: none; }
+  .top-med-rank { font-size: 0.75rem; font-weight: 800; color: var(--muted); width: 20px; }
+  .top-med-bar-wrap { flex: 1; }
+  .top-med-name { font-size: 0.82rem; font-weight: 600; margin-bottom: 4px; }
+  .top-med-bar { height: 6px; border-radius: 99px; background: var(--border); overflow: hidden; }
+  .top-med-fill { height: 100%; border-radius: 99px; background: linear-gradient(90deg, var(--accent), var(--accent2)); transition: width 0.6s; }
+  .top-med-count { font-size: 0.75rem; color: var(--muted); font-family: 'Fira Code', monospace; }
+  /* Checkout Modal */
+  .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 300; display: flex; align-items: center; justify-content: center; }
+  .modal { background: var(--surface); border-radius: 20px; padding: 32px; width: 480px; box-shadow: 0 20px 60px rgba(0,0,0,0.15); }
+  .modal-title { font-size: 1.3rem; font-weight: 800; margin-bottom: 24px; }
+  .form-group { margin-bottom: 16px; }
+  .form-label { font-size: 0.78rem; font-weight: 700; color: var(--muted); display: block; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
+  .form-input {
+    width: 100%; padding: 12px 14px; border: 1.5px solid var(--border); border-radius: 10px;
+    font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.88rem; color: var(--text);
+    background: var(--card); outline: none; transition: border-color 0.2s;
+  }
+  .form-input:focus { border-color: var(--accent); }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .modal-footer { display: flex; gap: 10px; margin-top: 24px; }
+  .btn-cancel { flex: 1; padding: 12px; border-radius: 10px; border: 1.5px solid var(--border); background: transparent; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.88rem; font-weight: 600; cursor: pointer; }
+  .btn-pay { flex: 2; padding: 12px; border-radius: 10px; background: var(--accent2); color: #fff; border: none; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.88rem; font-weight: 700; cursor: pointer; }
+  .success-msg { background: #dcfce7; border: 1.5px solid #86efac; border-radius: 12px; padding: 16px 20px; color: #166534; font-size: 0.88rem; font-weight: 600; text-align: center; margin-top: 16px; }
+  /* User Profile */
+  .profile-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 24px; max-width: 520px; }
+  .profile-avatar { width: 72px; height: 72px; border-radius: 50%; background: linear-gradient(135deg, var(--accent), var(--accent2)); display: flex; align-items: center; justify-content: center; font-size: 1.8rem; color: #fff; font-weight: 800; margin-bottom: 16px; }
+  .profile-name { font-size: 1.3rem; font-weight: 800; }
+  .profile-email { font-size: 0.85rem; color: var(--muted); margin-bottom: 20px; }
+  .profile-field { margin-bottom: 14px; }
+  .page-title { font-size: 1.4rem; font-weight: 800; margin-bottom: 6px; }
+  .page-subtitle { font-size: 0.85rem; color: var(--muted); margin-bottom: 24px; }
+  .tag { font-size: 0.7rem; font-weight: 700; padding: 3px 8px; border-radius: 6px; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { useState, useEffect, useMemo, useCallback } = React;
+
+// ─── Zustand-like Store (simulated with React state + custom hook) ────────────
+const MEDICINES = [
+  { id:1, name:'Paracetamol 500mg', category:'Pain Relief', price:120, icon:'💊', stock:150, type:'tablet' },
+  { id:2, name:'Amoxicillin 250mg', category:'Antibiotic', price:380, icon:'🔵', stock:80, type:'capsule' },
+  { id:3, name:'Cetirizine 10mg',   category:'Allergy',    price:95,  icon:'🟡', stock:200, type:'tablet' },
+  { id:4, name:'Omeprazole 20mg',   category:'Gastro',     price:210, icon:'🟢', stock:120, type:'capsule' },
+  { id:5, name:'Metformin 500mg',   category:'Diabetes',   price:160, icon:'⚪', stock:90,  type:'tablet' },
+  { id:6, name:'Atorvastatin 10mg', category:'Cardiac',    price:290, icon:'❤️', stock:60,  type:'tablet' },
+  { id:7, name:'Aspirin 75mg',      category:'Cardiac',    price:85,  icon:'🔴', stock:300, type:'tablet' },
+  { id:8, name:'Vitamin D3 1000IU', category:'Vitamins',   price:450, icon:'☀️', stock:200, type:'capsule' },
+  { id:9, name:'Ibuprofen 400mg',   category:'Pain Relief',price:140, icon:'💙', stock:170, type:'tablet' },
+  { id:10,name:'Zinc Sulfate',      category:'Vitamins',   price:220, icon:'⚡', stock:110, type:'tablet' },
+  { id:11,name:'Azithromycin 250mg',category:'Antibiotic', price:560, icon:'🟣', stock:45,  type:'capsule' },
+  { id:12,name:'Loratadine 10mg',   category:'Allergy',    price:130, icon:'🌸', stock:140, type:'tablet' },
+];
+
+const CATEGORIES = ['All', 'Pain Relief', 'Antibiotic', 'Allergy', 'Gastro', 'Diabetes', 'Cardiac', 'Vitamins'];
+const CAT_COLORS = { 'Pain Relief':'#fef3c7:#92400e', 'Antibiotic':'#dbeafe:#1e40af', 'Allergy':'#fce7f3:#9d174d', 'Gastro':'#d1fae5:#065f46', 'Diabetes':'#ede9fe:#4c1d95', 'Cardiac':'#fee2e2:#991b1b', 'Vitamins':'#fef9c3:#713f12' };
+
+function catStyle(cat) {
+  const [bg,color] = (CAT_COLORS[cat]||'#f1f5f9:#475569').split(':');
+  return { background: bg, color };
+}
+
+// Simulated Zustand store
+function useStore() {
+  const [cart, setCart] = useState(() => {
+    try { return JSON.parse(localStorage.getItem('pharma_cart') || '[]'); } catch { return []; }
+  });
+  const [user] = useState({ name: 'Dr. Ahmad Hassan', email: 'ahmad.hassan@clinic.pk', plan: 'Premium' });
+
+  useEffect(() => { localStorage.setItem('pharma_cart', JSON.stringify(cart)); }, [cart]);
+
+  const addToCart = (med) => setCart(prev => {
+    const existing = prev.find(i => i.id === med.id);
+    if (existing) return prev.map(i => i.id === med.id ? { ...i, qty: i.qty + 1 } : i);
+    return [...prev, { ...med, qty: 1 }];
+  });
+  const removeFromCart = (id) => setCart(prev => prev.filter(i => i.id !== id));
+  const updateQty = (id, delta) => setCart(prev =>
+    prev.map(i => i.id === id ? { ...i, qty: Math.max(1, i.qty + delta) } : i).filter(i => i.qty > 0)
+  );
+  const clearCart = () => setCart([]);
+
+  const totalValue = cart.reduce((s, i) => s + i.price * i.qty, 0);
+  const totalItems = cart.reduce((s, i) => s + i.qty, 0);
+  const topMeds = [...cart].sort((a,b) => b.qty - a.qty).slice(0, 5);
+
+  return { cart, user, addToCart, removeFromCart, updateQty, clearCart, totalValue, totalItems, topMeds };
+}
+
+// ─── Cart Panel ───────────────────────────────────────────────────────────────
+function CartPanel({ cart, totalValue, removeFromCart, updateQty, onClose, onCheckout }) {
+  return (
+    <div className="cart-panel-overlay" onClick={e => e.target === e.currentTarget && onClose()}>
+      <div className="cart-panel">
+        <div className="cart-header">
+          <span className="cart-title">🛒 Your Cart ({cart.length})</span>
+          <button className="close-btn" onClick={onClose}>✕</button>
+        </div>
+        <div className="cart-items">
+          {cart.length === 0 ? (
+            <div className="empty-cart"><div className="icon">🛒</div>Your cart is empty</div>
+          ) : cart.map(item => (
+            <div className="cart-item" key={item.id}>
+              <span className="cart-item-icon">{item.icon}</span>
+              <div className="cart-item-info">
+                <div className="cart-item-name">{item.name}</div>
+                <div className="cart-item-price">Rs. {(item.price * item.qty).toLocaleString()}</div>
+              </div>
+              <div className="qty-ctrl">
+                <button className="qty-btn" onClick={() => updateQty(item.id, -1)}>−</button>
+                <span className="qty-val">{item.qty}</span>
+                <button className="qty-btn" onClick={() => updateQty(item.id, 1)}>+</button>
+              </div>
+              <button className="remove-btn" onClick={() => removeFromCart(item.id)}>🗑</button>
+            </div>
+          ))}
+        </div>
+        <div className="cart-footer">
+          <div className="cart-total">
+            <span className="cart-total-label">Total Amount</span>
+            <span className="cart-total-val">Rs. {totalValue.toLocaleString()}</span>
+          </div>
+          <button className="checkout-btn" onClick={onCheckout} disabled={cart.length === 0}>
+            Proceed to Checkout →
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── Checkout Modal ───────────────────────────────────────────────────────────
+function CheckoutModal({ totalValue, onClose, onConfirm }) {
+  const [step, setStep] = useState('address');
+  const [addr, setAddr] = useState({ street: '', city: 'Islamabad', zip: '', phone: '', card: '', expiry: '', cvv: '' });
+  const [success, setSuccess] = useState(false);
+
+  const handleConfirm = () => {
+    setSuccess(true);
+    setTimeout(() => { onConfirm(); onClose(); }, 2000);
+  };
+
+  return (
+    <div className="modal-overlay">
+      <div className="modal">
+        <div className="modal-title">{success ? '✅ Order Confirmed!' : step === 'address' ? '📍 Delivery Address' : '💳 Payment'}</div>
+        {success ? (
+          <div className="success-msg">Your order of Rs. {totalValue.toLocaleString()} has been placed! Expected delivery in 2-3 hours.</div>
+        ) : step === 'address' ? (
+          <>
+            <div className="form-group"><label className="form-label">Street Address</label><input className="form-input" placeholder="House #, Street, Block..." value={addr.street} onChange={e => setAddr({...addr, street: e.target.value})} /></div>
+            <div className="form-row">
+              <div className="form-group"><label className="form-label">City</label><input className="form-input" value={addr.city} onChange={e => setAddr({...addr, city: e.target.value})} /></div>
+              <div className="form-group"><label className="form-label">Zip Code</label><input className="form-input" placeholder="44000" value={addr.zip} onChange={e => setAddr({...addr, zip: e.target.value})} /></div>
+            </div>
+            <div className="form-group"><label className="form-label">Phone Number</label><input className="form-input" placeholder="+92 300 0000000" value={addr.phone} onChange={e => setAddr({...addr, phone: e.target.value})} /></div>
+            <div className="modal-footer">
+              <button className="btn-cancel" onClick={onClose}>Cancel</button>
+              <button className="btn-pay" onClick={() => setStep('payment')}>Next: Payment →</button>
+            </div>
+          </>
+        ) : (
+          <>
+            <div className="form-group"><label className="form-label">Card Number</label><input className="form-input" placeholder="1234 5678 9012 3456" maxLength={19} value={addr.card} onChange={e => setAddr({...addr, card: e.target.value})} /></div>
+            <div className="form-row">
+              <div className="form-group"><label className="form-label">Expiry</label><input className="form-input" placeholder="MM/YY" value={addr.expiry} onChange={e => setAddr({...addr, expiry: e.target.value})} /></div>
+              <div className="form-group"><label className="form-label">CVV</label><input className="form-input" placeholder="123" maxLength={3} value={addr.cvv} onChange={e => setAddr({...addr, cvv: e.target.value})} /></div>
+            </div>
+            <div style={{background:'#f0fdf4', border:'1.5px solid #86efac', borderRadius:10, padding:'12px 16px', fontSize:'0.82rem', color:'#166534', fontWeight:600}}>
+              💰 Total to pay: Rs. {totalValue.toLocaleString()}
+            </div>
+            <div className="modal-footer">
+              <button className="btn-cancel" onClick={() => setStep('address')}>← Back</button>
+              <button className="btn-pay" onClick={handleConfirm}>Confirm Payment ✓</button>
+            </div>
+          </>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// ─── Medicines Page ───────────────────────────────────────────────────────────
+function MedicinesPage({ cart, addToCart }) {
+  const [search, setSearch] = useState('');
+  const [category, setCategory] = useState('All');
+  const [maxPrice, setMaxPrice] = useState(600);
+  const cartIds = cart.map(i => i.id);
+
+  const filtered = useMemo(() => MEDICINES.filter(m => {
+    const q = search.toLowerCase();
+    return (category === 'All' || m.category === category)
+      && m.price <= maxPrice
+      && (m.name.toLowerCase().includes(q) || m.category.toLowerCase().includes(q));
+  }), [search, category, maxPrice]);
+
+  return (
+    <div className="medicines-layout">
+      <div className="filters-panel">
+        <div className="filters-title">Filters</div>
+        <div className="filter-group">
+          <span className="filter-label">Category</span>
+          {CATEGORIES.map(c => (
+            <div key={c} className={`filter-option ${category === c ? 'active' : ''}`} onClick={() => setCategory(c)}>
+              {c !== 'All' && <div className="filter-dot" style={{ background: catStyle(c).color }} />} {c}
+            </div>
+          ))}
+        </div>
+        <div className="filter-group">
+          <span className="filter-label">Max Price</span>
+          <div className="price-range">
+            <input type="range" min={50} max={600} value={maxPrice} onChange={e => setMaxPrice(+e.target.value)} />
+            <div className="range-labels"><span>Rs. 50</span><span>Rs. {maxPrice}</span></div>
+          </div>
+        </div>
+        <div className="filter-group">
+          <span className="filter-label">Type</span>
+          {['All Types','tablet','capsule'].map(t => (
+            <div key={t} className="filter-option">{t.charAt(0).toUpperCase()+t.slice(1)}</div>
+          ))}
+        </div>
+      </div>
+      <div className="medicines-content">
+        <div className="search-bar">
+          <span className="search-icon">🔍</span>
+          <input placeholder="Search medicines, categories..." value={search} onChange={e => setSearch(e.target.value)} />
+          {search && <button style={{background:'none',border:'none',cursor:'pointer',color:'var(--muted)'}} onClick={() => setSearch('')}>✕</button>}
+        </div>
+        <div style={{fontSize:'0.8rem', color:'var(--muted)'}}>Showing <strong style={{color:'var(--text)'}}>{filtered.length}</strong> medicines</div>
+        <div className="medicines-grid">
+          {filtered.map(med => (
+            <div className="med-card" key={med.id}>
+              <div className="med-icon">{med.icon}</div>
+              <div className="med-name">{med.name}</div>
+              <div className="med-category tag" style={catStyle(med.category)}>{med.category}</div>
+              <div className="med-price">Rs. {med.price}</div>
+              <div className="med-stock">Stock: {med.stock} units</div>
+              <button
+                className={`add-cart-btn ${cartIds.includes(med.id) ? 'in-cart' : ''}`}
+                onClick={() => addToCart(med)}
+              >
+                {cartIds.includes(med.id) ? '✓ Added' : '+ Add to Cart'}
+              </button>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── Dashboard Page ───────────────────────────────────────────────────────────
+function DashboardPage({ cart, totalValue, totalItems, user }) {
+  const maxQty = Math.max(...cart.map(i => i.qty), 1);
+  return (
+    <div>
+      <div className="page-title">Analytics Dashboard</div>
+      <div className="page-subtitle">Real-time overview of your pharmacy cart</div>
+      <div className="dashboard-grid">
+        <div className="stat-card">
+          <div className="stat-icon">💰</div>
+          <div className="stat-val" style={{color:'var(--accent)'}}>Rs. {totalValue.toLocaleString()}</div>
+          <div className="stat-label">Total Cart Value</div>
+        </div>
+        <div className="stat-card">
+          <div className="stat-icon">📦</div>
+          <div className="stat-val">{totalItems}</div>
+          <div className="stat-label">Items in Cart</div>
+        </div>
+        <div className="stat-card">
+          <div className="stat-icon">🏥</div>
+          <div className="stat-val">{cart.length}</div>
+          <div className="stat-label">Unique Medicines</div>
+        </div>
+      </div>
+      <div className="analytics-row">
+        <div className="analytics-card">
+          <div className="analytics-title">Most Ordered Medicines</div>
+          {cart.length === 0 ? <div style={{color:'var(--muted)',fontSize:'0.82rem'}}>Add medicines to cart to see analytics</div> :
+            [...cart].sort((a,b)=>b.qty-a.qty).map((item, i) => (
+              <div className="top-med-item" key={item.id}>
+                <span className="top-med-rank">#{i+1}</span>
+                <div className="top-med-bar-wrap">
+                  <div className="top-med-name">{item.name}</div>
+                  <div className="top-med-bar">
+                    <div className="top-med-fill" style={{width:`${(item.qty/maxQty)*100}%`}} />
+                  </div>
+                </div>
+                <span className="top-med-count">{item.qty}x</span>
+              </div>
+            ))
+          }
+        </div>
+        <div className="analytics-card">
+          <div className="analytics-title">User Activity</div>
+          <div className="profile-card" style={{border:'none',padding:0}}>
+            <div style={{display:'flex',alignItems:'center',gap:14,marginBottom:20}}>
+              <div style={{width:52,height:52,borderRadius:'50%',background:'linear-gradient(135deg,var(--accent),var(--accent2))',display:'flex',alignItems:'center',justifyContent:'center',color:'#fff',fontWeight:800,fontSize:'1.2rem'}}>
+                {user.name.split(' ').map(n=>n[0]).join('')}
+              </div>
+              <div>
+                <div style={{fontWeight:700}}>{user.name}</div>
+                <div style={{fontSize:'0.8rem',color:'var(--muted)'}}>{user.email}</div>
+              </div>
+            </div>
+            {[
+              ['Plan', user.plan, '#7c3aed'],
+              ['Sessions Today', '3', 'var(--accent)'],
+              ['Orders This Month', '7', 'var(--accent2)'],
+              ['Preferred Delivery', 'Home Delivery', 'var(--warn)'],
+            ].map(([label, val, color]) => (
+              <div key={label} style={{display:'flex',justifyContent:'space-between',padding:'8px 0',borderBottom:'1px solid var(--border)',fontSize:'0.83rem'}}>
+                <span style={{color:'var(--muted)',fontWeight:600}}>{label}</span>
+                <span style={{fontWeight:700,color}}>{val}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── App ─────────────────────────────────────────────────────────────────────
+function App() {
+  const { cart, user, addToCart, removeFromCart, updateQty, clearCart, totalValue, totalItems, topMeds } = useStore();
+  const [page, setPage] = useState('medicines');
+  const [showCart, setShowCart] = useState(false);
+  const [showCheckout, setShowCheckout] = useState(false);
+
+  return (
+    <div>
+      <div className="header">
+        <div className="logo">Rx<em>Pharma</em></div>
+        <div className="nav">
+          {[['medicines','💊 Medicines'],['dashboard','📊 Dashboard'],['profile','👤 Profile']].map(([p,label]) => (
+            <button key={p} className={`nav-btn ${page===p?'active':''}`} onClick={() => setPage(p)}>{label}</button>
+          ))}
+        </div>
+        <div className="header-right">
+          <button className="cart-btn" onClick={() => setShowCart(true)}>
+            🛒 Cart
+            {totalItems > 0 && <span className="cart-badge">{totalItems}</span>}
+          </button>
+        </div>
+      </div>
+      <div className="main" style={{marginTop:'calc(var(--header-h) + 28px)'}}>
+        {page === 'medicines' && <MedicinesPage cart={cart} addToCart={addToCart} />}
+        {page === 'dashboard' && <DashboardPage cart={cart} totalValue={totalValue} totalItems={totalItems} user={user} />}
+        {page === 'profile' && (
+          <div>
+            <div className="page-title">User Profile</div>
+            <div className="page-subtitle">Manage your account and delivery preferences</div>
+            <div className="profile-card">
+              <div className="profile-avatar">{user.name.split(' ').map(n=>n[0]).join('')}</div>
+              <div className="profile-name">{user.name}</div>
+              <div className="profile-email">{user.email}</div>
+              {[['Plan','Premium ✓'],['Preferred Delivery','Home Delivery'],['City','Islamabad'],['Member Since','Jan 2024']].map(([l,v])=>(
+                <div className="profile-field" key={l} style={{padding:'10px 0',borderBottom:'1px solid var(--border)',display:'flex',justifyContent:'space-between',fontSize:'0.85rem'}}>
+                  <span style={{color:'var(--muted)',fontWeight:600}}>{l}</span>
+                  <span style={{fontWeight:700}}>{v}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+      {showCart && <CartPanel cart={cart} totalValue={totalValue} removeFromCart={removeFromCart} updateQty={updateQty} onClose={() => setShowCart(false)} onCheckout={() => { setShowCart(false); setShowCheckout(true); }} />}
+      {showCheckout && <CheckoutModal totalValue={totalValue} onClose={() => setShowCheckout(false)} onConfirm={clearCart} />}
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>
